@@ -1,9 +1,12 @@
 import './App.css';
 import { useEffect, useState } from "react";
 import { HubConnectionBuilder } from '@microsoft/signalr';
+import { Card, ProgressBar } from "react-bootstrap";
 
 function App() {
   const [hubConnection, setHubConnection] = useState(null);
+  const [quantity, setQuantity] = useState(0);
+  
 
   useEffect(() => {
     const hubConnection = new HubConnectionBuilder()
@@ -18,6 +21,11 @@ function App() {
       hubConnection.start()
         .then(result => {
           console.log('Connected!');
+          hubConnection.on('ReceiveMessage', message => {
+            setQuantity(message)
+            console.log(message);
+          });
+
         })
         .catch(e => console.log('Connection failed: ', e));
     }
@@ -25,7 +33,22 @@ function App() {
 
   return (
     <div className="App">
-      <h1>SignalR Works</h1>
+      <Card
+        bg={"success"}
+        style={{ width: '18rem' }}
+        className="mb-2"
+        text={'white'}
+        style={{ width: '18rem' }}
+      >
+        <Card.Header>SignalR Rocks!</Card.Header>
+        <Card.Body>
+          <Card.Title> Quantidade Atual </Card.Title>
+          <Card.Text style={{fontSize: 62}}>
+            {quantity}
+          </Card.Text>
+          <ProgressBar now={quantity} />
+        </Card.Body>
+      </Card>
     </div>
   );
 }
